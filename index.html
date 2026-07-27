@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Happy 16th Birthday Beaa! 🎂✨</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brown: #8D6E63;
+            --dark-brown: #5D4037;
+            --pink: #F48FB1;
+            --light-pink: #FCE4EC;
+            --bg-grad: linear-gradient(135deg, #FCE4EC 0%, #EFEBE9 100%);
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: var(--bg-grad);
+            color: var(--dark-brown);
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Loading & Password Screens */
+        .overlay-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-grad);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .overlay-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(1.1);
+        }
+
+        .cat-mascot {
+            width: clamp(120px, 30vw, 200px);
+            border-radius: 50%;
+            box-shadow: 0 10px 25px rgba(141, 110, 99, 0.3);
+            object-fit: cover;
+            aspect-ratio: 1;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .cat-mascot.float { animation: float 3s ease-in-out infinite; }
+        .cat-mascot.jump { animation: jump 0.6s ease; }
+        .cat-mascot.sad { animation: sad 0.5s ease; }
+        .cat-mascot.wiggle { animation: wiggle 0.5s ease; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        @keyframes jump {
+            0%, 100% { transform: scale(1) translateY(0); }
+            50% { transform: scale(1.1) translateY(-30px); }
+        }
+        @keyframes sad {
+            0%, 100% { transform: translateY(0) rotate(0); }
+            50% { transform: translateY(10px) rotate(-5deg); }
+        }
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+
+        h1 { font-family: 'Pacifico', cursive; color: var(--pink); font-size: clamp(2rem, 6vw, 3.5rem); margin-bottom: 10px; text-shadow: 2px 2px 0px #fff; }
+        .sub-text { font-size: clamp(1rem, 3vw, 1.2rem); margin-bottom: 30px; color: var(--brown); }
+        
+        .input-field {
+            padding: 15px 20px;
+            border: 2px solid var(--pink);
+            border-radius: 50px;
+            font-size: 1rem;
+            outline: none;
+            width: 100%;
+            max-width: 300px;
+            text-align: center;
+            font-family: 'Quicksand', sans-serif;
+            margin-bottom: 15px;
+            background: rgba(255,255,255,0.8);
+        }
+
+        .btn {
+            padding: 12px 30px;
+            background: var(--pink);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(244, 143, 177, 0.4);
+            font-family: 'Quicksand', sans-serif;
+            margin: 5px;
+        }
+
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 7px 20px rgba(244, 143, 177, 0.5); }
+        .btn.secondary { background: var(--brown); box-shadow: 0 4px 15px rgba(141, 110, 99, 0.4); }
+        .btn:active { transform: scale(0.95); }
+
+        .notification {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #fff;
+            border-radius: 20px;
+            color: var(--brown);
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+        .notification.show { opacity: 1; transform: translateY(0); }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .nav-logo { font-family: 'Pacifico', cursive; color: var(--pink); font-size: 1.5rem; }
+        .nav-links { display: flex; gap: 15px; }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--brown);
+            font-weight: 600;
+            font-size: 1rem;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--pink); }
+        .hamburger { display: none; font-size: 1.5rem; cursor: pointer; background: none; border: none; color: var(--brown); }
+
+        /* Main Content */
+        .main-content {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 1s ease;
+        }
+        .main-content.visible { opacity: 1; visibility: visible; }
+
+        section {
+            min-height: 100vh;
+            padding: 100px 5% 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+        }
+
+        /* Hero */
+        .hero-title { font-size: clamp(2.5rem, 8vw, 5rem); margin-bottom: 10px; }
+        .hero-sub { font-size: clamp(1.2rem, 4vw, 2rem); color: var(--brown); margin-bottom: 40px; }
+        
+        /* Beaa's World Cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 40px;
+        }
+        .card {
+            background: var(--card-bg);
+            border: var(--glass-border);
+            backdrop-filter: blur(5px);
+            padding: 20px;
+            border-radius: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        .card:hover { transform: translateY(-5px) scale(1.03); box-shadow: 0 10px 20px rgba(244, 143, 177, 0.2); }
+        .card-icon { font-size: 2.5rem; margin-bottom: 10px; }
+        .card h3 { color: var(--pink); margin-bottom: 5px; }
+        .card p { color: var(--brown); font-weight: 600; }
+
+        /* Photo Gallery */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 30px;
+        }
+        .gallery-item {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            background: #eee;
+        }
+        .gallery-item:hover { transform: scale(1.02); }
+
+        /* Lightbox */
+        .lightbox {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .lightbox.active { display: flex; }
+        .lightbox img { max-width: 90%; max-height: 80vh; border-radius: 10px; }
+        .lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 2rem; cursor: pointer; }
+
+        /* Video Section */
+        video { width: 100%; max-width: 800px; border-radius: 15px; margin-top: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+
+        /* Music Player */
+        .music-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            z-index: 50;
+            width: 300px;
+            transition: transform 0.3s;
+        }
+        .player-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .disc { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(45deg, var(--brown), var(--pink)); animation: spin 3s linear infinite; animation-play-state: paused; }
+        .disc.playing { animation-play-state: running; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .song-info { flex: 1; }
+        .song-title { font-weight: 700; color: var(--dark-brown); font-size: 0.9rem; }
+        .song-artist { font-size: 0.8rem; color: var(--brown); }
+        .play-btn { width: 40px; height: 40px; border-radius: 50%; border: none; background: var(--pink); color: white; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
+        .progress-bar { width: 100%; height: 5px; background: #ddd; border-radius: 5px; margin-top: 10px; cursor: pointer; }
+        .progress { width: 0; height: 100%; background: var(--pink); border-radius: 5px; }
+
+        /* Cat Zone */
+        .cat-zone-container { position: relative; width: 100%; max-width: 800px; height: 400px; display: flex; justify-content: center; align-items: center; }
+        .speech-bubble { background: white; padding: 15px 20px; border-radius: 20px; margin-bottom: 20px; position: absolute; top: 0; box-shadow: 0 5px 15px rgba(0,0,0,0.1); opacity: 0; transition: opacity 0.3s; }
+        .speech-bubble.show { opacity: 1; }
+
+        /* Cake Section */
+        .cake-container { position: relative; width: 300px; height: 300px; margin-top: 30px; }
+        .cake-base { width: 200px; height: 100px; background: var(--brown); margin: 150px auto 0; border-radius: 10px; position: relative; }
+        .cake-top { width: 220px; height: 50px; background: var(--pink); margin: 0 auto; border-radius: 10px; position: relative; top: -10px; }
+        .candle { position: absolute; width: 10px; height: 30px; background: #fff; top: -30px; left: 50%; transform: translateX(-50%); border-radius: 2px; }
+        .flame { width: 10px; height: 15px; background: #FF9800; border-radius: 50% 50% 20% 20%; position: absolute; top: -15px; animation: flicker 0.5s infinite alternate; }
+        .flame.off { display: none; }
+        @keyframes flicker { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+
+        /* Secret Cat */
+        .secret-cat {
+            position: fixed;
+            bottom: 15px;
+            left: 15px;
+            width: 40px;
+            opacity: 0.2;
+            cursor: pointer;
+            z-index: 40;
+            transition: opacity 0.3s;
+        }
+        .secret-cat:hover { opacity: 1; }
+
+        /* Utilities */
+        .reveal { opacity: 0; transform: translateY(50px); transition: all 0.8s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 768px) {
+            .hamburger { display: block; }
+            .nav-links { display: none; flex-direction: column; position: absolute; top: 70px; left: 0; width: 100%; background: white; padding: 20px; box-shadow: 0 5px 10px rgba(0,0,0,0.1); }
+            .nav-links.active { display: flex; }
+            .music-player { width: calc(100% - 40px); right: 20px; left: 20px; bottom: 10px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { animation: none !important; transition: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loading / Password Screen -->
+    <div class="overlay-screen" id="passwordScreen">
+        <img src="https://z-cdn-media.chatglm.cn/files/980dfbe2-3ee5-44a5-a65d-f9750d79defd.jpeg?auth_key=1885079459-e82b237878e54def8e498da86f0eaba9-0-7839359b7ccb1b4e2e81c116aea34ed5" class="cat-mascot float" alt="Custom Cat">
+        <h1>pssst... this surprise is only for Beaa 🐱✨</h1>
+        <p class="sub-text">Enter the secret password to unlock your surprise</p>
+        <input type="text" class="input-field" id="passInput" placeholder="Enter secret password">
+        <button class="btn" onclick="checkPassword()">Unlock My Surprise ✨</button>
+        <div class="notification" id="passNotif"></div>
+    </div>
+
+    <!-- Surprise Cat Screen -->
+    <div class="overlay-screen hidden" id="surpriseScreen" style="display: none;">
+        <img src="https://z-cdn-media.chatglm.cn/files/d05e75e3-4f6b-4d72-95df-a5a2a4afc40e.jpeg?auth_key=1885079459-fadce871c97540c19124178fec765b51-0-f614c9ed01416e05aaa3b86bde87b90f" class="cat-mascot float" id="surpriseCat" alt="Custom Cat">
+        <h1 id="surpriseTitle">Hey Beaa... 🐱✨</h1>
+        <p class="sub-text" id="surpriseText">I have a tiny question for you...<br>Wanna see your birthday surprise?</p>
+        <div id="surpriseBtns">
+            <button class="btn" onclick="handleYes()">YES! ✨</button>
+            <button class="btn secondary" onclick="handleNo()">NOPE 🙈</button>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="mainNav" style="display: none;">
+        <div class="nav-container">
+            <div class="nav-logo">Beaa's 16th ✨</div>
+            <button class="hamburger" onclick="toggleNav()">☰</button>
+            <div class="nav-links" id="navLinks">
+                <a href="#hero">Home</a>
+                <a href="#world">Beaa's World</a>
+                <a href="#photos">Memories</a>
+                <a href="#videos">Videos</a>
+                <a href="#cat-zone">Cat Zone</a>
+                <a href="#wish">Wish</a>
+                <a href="#cake">Cake</a>
+                <a href="#final">Final</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        
+        <!-- Hero Section -->
+        <section id="hero">
+            <h1 class="hero-title">Happy 16th Birthday, Abeeha! 🎂✨</h1>
+            <p class="hero-sub">Welcome to Beaa's Special Birthday World</p>
+            <img src="https://z-cdn-media.chatglm.cn/files/980dfbe2-3ee5-44a5-a65d-f9750d79defd.jpeg?auth_key=1885079459-e82b237878e54def8e498da86f0eaba9-0-7839359b7ccb1b4e2e81c116aea34ed5" class="cat-mascot float" style="width: 200px;">
+        </section>
+
+        <!-- Beaa's World -->
+        <section id="world" class="reveal">
+            <h1>Welcome to Beaa's World ✨</h1>
+            <div class="cards-grid">
+                <div class="card"><div class="card-icon">🐱</div><h3>Favorite Animal</h3><p>Cat</p></div>
+                <div class="card"><div class="card-icon">🎨</div><h3>Favorite Colors</h3><p>Brown + Pink</p></div>
+                <div class="card"><div class="card-icon">🎵</div><h3>Favorite Song</h3><p>Otsukare Summer</p></div>
+                <div class="card"><div class="card-icon">⭐</div><h3>Favorite Numbers</h3><p>27 + 7</p></div>
+                <div class="card"><div class="card-icon">🔤</div><h3>Alphabets</h3><p>A + J + S</p></div>
+                <div class="card"><div class="card-icon">🌟</div><h3>Loves</h3><p>Stars</p></div>
+                <div class="card"><div class="card-icon">🎸</div><h3>Also Loves</h3><p>Guitar + Music</p></div>
+                <div class="card"><div class="card-icon">🎬</div><h3>Entertainment</h3><p>Anime + K/C Dramas</p></div>
+                <div class="card"><div class="card-icon">💜</div><h3>Fandom</h3><p>BTS / ARMY</p></div>
+                <div class="card"><div class="card-icon">✨</div><h3>Crush</h3><p>Jungkook</p></div>
+            </div>
+        </section>
+
+        <!-- Message -->
+        <section id="message" class="reveal">
+            <h1>Happy Birthday, Beaa! 🎂✨</h1>
+            <p class="sub-text" style="max-width: 800px; line-height: 1.8; margin-top: 20px;">
+                You're officially 16! I hope this new chapter brings you lots of happiness, amazing memories, great music, fun adventures, awesome anime, unforgettable dramas, and obviously... lots of cats! 🐱<br><br>
+                Keep being your unique and amazing self. May your days be filled with music, stars, laughter, and everything that makes you happy.<br><br>
+                You're not getting older... You're just unlocking a new level! 🎮✨<br>Happy Birthday, Beaa! 🥳
+            </p>
+        </section>
+
+        <!-- Photos -->
+        <section id="photos" class="reveal">
+            <h1>Beaa's Memories 📸✨</h1>
+            <div class="gallery-grid" id="galleryGrid"></div>
+        </section>
+
+        <!-- Videos -->
+        <section id="videos" class="reveal">
+            <h1>Little Moments 🎥</h1>
+            <video controls preload="metadata" playsinline>
+                <source src="assets/videos/memory1.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </section>
+
+        <!-- Cat Zone -->
+        <section id="cat-zone" class="reveal">
+            <h1>Beaa's Cat Zone 🐱✨</h1>
+            <div class="cat-zone-container">
+                <div class="speech-bubble" id="catSpeech">Meowww! 🐱</div>
+                <img src="https://z-cdn-media.chatglm.cn/files/c6eda2dc-16f0-4d9e-aa5d-247d442378b7.jpeg?auth_key=1885079459-0b3eeca7c8bb452eb318e1363585fec1-0-2dac32ccd5b82828036e483a2c4bd624" class="cat-mascot" id="zoneCat" style="cursor: pointer; width: 250px;" onclick="interactCat()">
+            </div>
+            <p class="sub-text">Click the cat!</p>
+        </section>
+
+        <!-- Star Wish -->
+        <section id="wish" class="reveal" style="background: #2c1e33; color: white;">
+            <h1 style="color: #FFD700;">Make a Wish ⭐</h1>
+            <p class="sub-text" style="color: #ddd;">Because Beaa loves stars...</p>
+            <button class="btn" onclick="makeWish()">Make a Birthday Wish ⭐</button>
+            <div id="wishText" style="margin-top: 20px; font-size: 1.5rem; color: #FFD700; opacity: 0; transition: opacity 0.5s;"></div>
+        </section>
+
+        <!-- Cake -->
+        <section id="cake" class="reveal">
+            <h1>Make a Wish, Beaa! 🎂</h1>
+            <div class="cake-container" id="cakeContainer">
+                <div class="cake-base"></div>
+                <div class="cake-top"></div>
+                <!-- Candles generated by JS -->
+            </div>
+            <p class="sub-text" id="cakeText" style="margin-top: 20px;">Click the candles to blow them out!</p>
+        </section>
+
+        <!-- Final -->
+        <section id="final" class="reveal">
+            <h1>One Last Thing, Beaa... ⭐</h1>
+            <img src="https://z-cdn-media.chatglm.cn/files/980dfbe2-3ee5-44a5-a65d-f9750d79defd.jpeg?auth_key=1885079459-e82b237878e54def8e498da86f0eaba9-0-7839359b7ccb1b4e2e81c116aea34ed5" class="cat-mascot float" style="margin: 20px 0;">
+            <p class="sub-text" style="max-width: 800px; line-height: 1.8; margin-top: 10px;">
+                I hope this little birthday world made you smile.<br>
+                Keep chasing your dreams. Keep enjoying your music.<br>
+                Keep watching your anime and dramas. Keep loving cats. Keep looking at the stars.<br><br>
+                And most importantly... Keep being YOU. 🐱⭐<br>
+                Have an absolutely amazing birthday! 🥳
+            </p>
+        </section>
+    </div>
+
+    <!-- Music Player -->
+    <div class="music-player" id="musicPlayer" style="display: none;">
+        <div class="player-header">
+            <div class="disc" id="disc"></div>
+            <div class="song-info">
+                <div class="song-title">🎵 Beaa's Favorite Song</div>
+                <div class="song-artist">Otsukare Summer - halcali.official</div>
+            </div>
+            <button class="play-btn" id="playBtn" onclick="toggleMusic()">▶️</button>
+        </div>
+        <div class="progress-bar" id="progressBar" onclick="seek(event)">
+            <div class="progress" id="progress"></div>
+        </div>
+        <audio id="bgMusic" src="assets/audio/otsukare-summer.mp3" loop preload="auto" playsinline></audio>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <span class="lightbox-close" onclick="closeLightbox()">×</span>
+        <img src="" id="lightboxImg">
+    </div>
+
+    <!-- Secret Easter Egg Cat -->
+    <img src="https://z-cdn-media.chatglm.cn/files/17522004-d291-4831-a32c-2d43cbf91599.jpeg?auth_key=1885079459-ffe90342f7a74c6783ab610cb93e8f58-0-bd2a014067126c87180a1d0f61899941" class="secret-cat" onclick="foundSecretCat()" alt="Secret">
+
+    <script>
+        // --- Password Logic ---
+        const passScreen = document.getElementById('passwordScreen');
+        const surpriseScreen = document.getElementById('surpriseScreen');
+        const mainContent = document.getElementById('mainContent');
+        const mainNav = document.getElementById('mainNav');
+        const musicPlayer = document.getElementById('musicPlayer');
+
+        // --- Music Player refs (defined early so priming can use them) ---
+        const audio = document.getElementById('bgMusic');
+        const playBtn = document.getElementById('playBtn');
+        const disc = document.getElementById('disc');
+        const progress = document.getElementById('progress');
+        const progressBar = document.getElementById('progressBar');
+
+        // iOS Safari: prime the audio element during an existing user gesture
+        // so the media element is unlocked and preloading begins immediately.
+        // No autoplay, no fake clicks, no mute/unmute hacks.
+        let audioPrimed = false;
+        function primeAudio() {
+            if (audioPrimed) return;
+            audioPrimed = true;
+            try {
+                // Triggers preloading inside a user gesture, which helps iOS Safari
+                // initialize the media element and reduces first-play delay.
+                audio.load();
+            } catch (e) {
+                // Silently ignore — playback can still be attempted via the play button.
+            }
+        }
+
+        function checkPassword() {
+            const input = document.getElementById('passInput').value;
+            const notif = document.getElementById('passNotif');
+            if (input === 'hg16') {
+                // Existing user gesture — prime audio for iOS Safari preload.
+                primeAudio();
+                passScreen.classList.add('hidden');
+                setTimeout(() => {
+                    passScreen.style.display = 'none';
+                    surpriseScreen.style.display = 'flex';
+                    surpriseScreen.classList.remove('hidden');
+                }, 800);
+            } else {
+                notif.innerText = "Oopsieee! That's not the secret password 🐱";
+                notif.classList.add('show');
+                setTimeout(() => notif.classList.remove('show'), 3000);
+            }
+        }
+
+        // --- YES/NO Logic ---
+        let noClickCount = 0;
+        function handleYes() {
+            // Existing user gesture — prime audio for iOS Safari preload.
+            primeAudio();
+            const cat = document.getElementById('surpriseCat');
+            cat.classList.remove('float');
+            cat.classList.add('jump');
+            
+            document.getElementById('surpriseTitle').innerText = "YAYYYYY! I knew you would say YES! 🐱✨";
+            document.getElementById('surpriseText').innerHTML = "Your birthday surprise starts NOW! 🎂";
+            document.getElementById('surpriseBtns').innerHTML = '<button class="btn" onclick="startExperience()">Let\'s Go! 🚀</button>';
+            
+            // Simple confetti effect
+            createConfetti();
+        }
+
+        function handleNo() {
+            const cat = document.getElementById('surpriseCat');
+            cat.classList.remove('float', 'jump');
+            cat.classList.add('sad');
+            
+            noClickCount++;
+            const title = document.getElementById('surpriseTitle');
+            const text = document.getElementById('surpriseText');
+            const btns = document.getElementById('surpriseBtns');
+
+            if (noClickCount === 1) {
+                title.innerText = "Awww... Beaa said NO? 🥺";
+                text.innerText = "Are you sureeee? 🐱";
+                btns.innerHTML = '<button class="btn" onclick="handleYes()">Okay okay, YES! ✨</button><button class="btn secondary" onclick="handleNo()">Still No 😭</button>';
+            } else if (noClickCount === 2) {
+                title.innerText = "Fine... I'll wait... 🐱";
+                text.innerText = "...";
+                btns.innerHTML = '';
+                setTimeout(() => {
+                    title.innerText = "Okay I can't wait anymore 😭";
+                    text.innerText = "PLEASE CLICK YESSSS ✨";
+                    btns.innerHTML = '<button class="btn" onclick="handleYes()">YES! ✨</button>';
+                }, 3000);
+            }
+        }
+
+        // Guard against duplicate initialization of main experience.
+        let experienceStarted = false;
+        function startExperience() {
+            if (experienceStarted) return;
+            experienceStarted = true;
+
+            // Existing user gesture — prime audio for iOS Safari preload.
+            primeAudio();
+
+            surpriseScreen.classList.add('hidden');
+            setTimeout(() => {
+                surpriseScreen.style.display = 'none';
+                mainContent.classList.add('visible');
+                mainNav.style.display = 'block';
+                musicPlayer.style.display = 'block';
+                
+                // Scroll reveal setup
+                setupReveal();
+                setupCake();
+                setupGallery();
+            }, 800);
+        }
+
+        // --- Confetti ---
+        function createConfetti() {
+            const colors = ['#F48FB1', '#8D6E63', '#FFD700'];
+            const frag = document.createDocumentFragment();
+            const confettiEls = [];
+            for(let i=0; i<50; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'fixed';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-10px';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.background = colors[Math.floor(Math.random() * 3)];
+                confetti.style.borderRadius = '50%';
+                confetti.style.zIndex = 999;
+                confetti.style.transition = 'all 2s ease-out';
+                frag.appendChild(confetti);
+                confettiEls.push(confetti);
+            }
+            document.body.appendChild(frag);
+            
+            // Use a single rAF batch to trigger the transition efficiently.
+            requestAnimationFrame(() => {
+                for (let i = 0; i < confettiEls.length; i++) {
+                    confettiEls[i].style.top = '100vh';
+                    confettiEls[i].style.opacity = '0';
+                }
+            });
+            
+            setTimeout(() => {
+                for (let i = 0; i < confettiEls.length; i++) {
+                    if (confettiEls[i].parentNode) confettiEls[i].parentNode.removeChild(confettiEls[i]);
+                }
+            }, 2100);
+        }
+
+        // --- Music Player ---
+        // Use media events to drive UI state so it always reflects actual playback.
+        // This avoids falsely showing "playing" when audio.play() fails on iOS Safari.
+        audio.addEventListener('playing', () => {
+            playBtn.innerText = '⏸️';
+            disc.classList.add('playing');
+        });
+        audio.addEventListener('pause', () => {
+            playBtn.innerText = '▶️';
+            disc.classList.remove('playing');
+        });
+        audio.addEventListener('ended', () => {
+            playBtn.innerText = '▶️';
+            disc.classList.remove('playing');
+        });
+
+        function toggleMusic() {
+            // Existing user gesture — prime audio for iOS Safari preload/start.
+            primeAudio();
+            if (audio.paused) {
+                // audio.play() returns a Promise on modern browsers (incl. iOS Safari).
+                // Handle it correctly: only reflect "playing" once playback actually starts.
+                // The UI is updated via the 'playing'/'pause' events above.
+                const playPromise = audio.play();
+                if (playPromise && typeof playPromise.then === 'function') {
+                    playPromise.catch(e => {
+                        // Playback was blocked or failed (e.g., iOS policy / network).
+                        // Keep the play icon, stop the disc, allow retry.
+                        console.log("Audio playback could not start:", e);
+                        playBtn.innerText = '▶️';
+                        disc.classList.remove('playing');
+                    });
+                }
+            } else {
+                audio.pause();
+            }
+        }
+
+        // --- Audio progress (guard against NaN / missing duration) ---
+        audio.addEventListener('timeupdate', () => {
+            if (audio.duration && isFinite(audio.duration) && audio.duration > 0) {
+                const percent = (audio.currentTime / audio.duration) * 100;
+                progress.style.width = percent + '%';
+            }
+        });
+
+        audio.addEventListener('loadedmetadata', () => {
+            // Ensure duration is ready for seeking as early as possible.
+        });
+
+        function seek(e) {
+            if (!audio.duration || !isFinite(audio.duration) || audio.duration <= 0) return;
+            const rect = progressBar.getBoundingClientRect();
+            const x = (e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0)) - rect.left;
+            const percent = Math.max(0, Math.min(1, x / rect.width));
+            audio.currentTime = percent * audio.duration;
+        }
+
+        // --- Navigation ---
+        function toggleNav() {
+            document.getElementById('navLinks').classList.toggle('active');
+        }
+
+        // --- Reveal on Scroll (single observer, guarded against re-init) ---
+        let revealObserver = null;
+        function setupReveal() {
+            if (revealObserver) return;
+            const reveals = document.querySelectorAll('.reveal');
+            revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            reveals.forEach(r => revealObserver.observe(r));
+        }
+
+        // --- Photo Gallery ---
+        const photoUrls = [
+            "https://z-cdn-media.chatglm.cn/files/84a43c43-3010-4632-aeaf-3d47fe4da0e6.jpeg?auth_key=1885079459-53c74cb51b7b4d0b8f35391cb2af5717-0-af8cfa855132a9fcbdcea958b428009e",
+            "https://z-cdn-media.chatglm.cn/files/f9a7b131-e597-45a3-90c6-085418862aa9.jpeg?auth_key=1885079459-5c8102498dd84128bb5deb0e66b49350-0-b07a02ec267aa5118779492aef6ad119",
+            "https://z-cdn-media.chatglm.cn/files/5a50863e-836d-44f0-8e4b-a19012f8360d.jpeg?auth_key=1885079459-98b07b39aeec41cc9dc535d114fd3389-0-47ea2446944f0b92c8725a723d8c533f",
+            "https://z-cdn-media.chatglm.cn/files/98e905ec-7df5-4e41-bc0f-a1a88a64b988.jpeg?auth_key=1885079459-3e12eb3b37744d76ae6d3f71ad7c57e2-0-4590f64d256abd2b5b4c2aabf4e34b87"
+        ];
+
+        let galleryBuilt = false;
+        function setupGallery() {
+            if (galleryBuilt) return;
+            galleryBuilt = true;
+            const grid = document.getElementById('galleryGrid');
+            const frag = document.createDocumentFragment();
+            photoUrls.forEach(url => {
+                const img = document.createElement('img');
+                img.className = 'gallery-item';
+                img.loading = 'lazy';
+                img.decoding = 'async';
+                img.src = url;
+                img.addEventListener('click', () => openLightbox(url));
+                frag.appendChild(img);
+            });
+            grid.appendChild(frag);
+        }
+
+        function openLightbox(url) {
+            document.getElementById('lightboxImg').src = url;
+            document.getElementById('lightbox').classList.add('active');
+        }
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+        }
+
+        // --- Cat Zone ---
+        const catMessages = ["Happy Birthday Beaa!", "Where are my treats?", "Beaa is 16 now!", "Meowww! 🐱"];
+        let catMsgIndex = 0;
+        function interactCat() {
+            const cat = document.getElementById('zoneCat');
+            const speech = document.getElementById('catSpeech');
+            
+            cat.classList.remove('float', 'jump', 'sad', 'wiggle');
+            void cat.offsetWidth; // trigger reflow
+            
+            if (catMsgIndex % 2 === 0) cat.classList.add('jump');
+            else cat.classList.add('wiggle');
+            
+            speech.innerText = catMessages[catMsgIndex % catMessages.length];
+            speech.classList.add('show');
+            catMsgIndex++;
+            
+            setTimeout(() => speech.classList.remove('show'), 2000);
+        }
+
+        // --- Star Wish ---
+        function makeWish() {
+            const wishText = document.getElementById('wishText');
+            wishText.innerText = "Wish sent to the universe! ⭐✨";
+            wishText.style.opacity = 1;
+            createConfetti();
+            setTimeout(() => wishText.style.opacity = 0, 4000);
+        }
+
+        // --- Cake Section (guarded against re-init) ---
+        let cakeBuilt = false;
+        function setupCake() {
+            if (cakeBuilt) return;
+            cakeBuilt = true;
+            const container = document.getElementById('cakeContainer');
+            const cakeTop = container.querySelector('.cake-top');
+            let candlesLit = 16;
+
+            for(let i=0; i<16; i++) {
+                const candle = document.createElement('div');
+                candle.className = 'candle';
+                candle.style.left = (15 + (i * 5.5)) + '%'; // Spread candles
+                
+                const flame = document.createElement('div');
+                flame.className = 'flame';
+                candle.appendChild(flame);
+                
+                candle.addEventListener('click', () => {
+                    if(flame.classList.contains('off')) return;
+                    flame.classList.add('off');
+                    candlesLit--;
+                    if(candlesLit === 0) {
+                        document.getElementById('cakeText').innerText = "16 candles, one amazing Beaa! 🎂✨ Happy Birthday!!! 🥳";
+                        createConfetti();
+                    }
+                });
+                cakeTop.appendChild(candle);
+            }
+        }
+
+        // --- Secret Easter Egg ---
+        let secretClicks = 0;
+        function foundSecretCat() {
+            secretClicks++;
+            const cat = document.querySelector('.secret-cat');
+            cat.style.width = '60px';
+            
+            if(secretClicks > 4) {
+                alert("YOU FOUND THE SECRET CAT! 🐱✨\n\nOkay Beaa... You officially have excellent cat-detecting skills. Happy Birthday once again! 🎂🐱⭐");
+                secretClicks = 0;
+            }
+        }
+    </script>
+</body>
+</html>
